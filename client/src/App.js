@@ -35,13 +35,36 @@ export default function App() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+    const loginData{
       email: data.get('email'),
       password: data.get('password'),
       rememberMe: rememberMe,
-    });
-  };
+    };
+  
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
 
+      const result = await response.json();
+      if (response.ok) {
+        console.log("Access level:", result.accessLevel);
+        // Handle successful login
+      } else {
+        console.log("Login denied:", result.message);
+        // Handle login failure
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle network errors
+    }
+  };
+  
+ 
   const handleForgotPassword = () => {
     console.log("Redirect to forgot password page");
     // Implement your logic here, e.g., navigate to a forgot password page
