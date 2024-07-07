@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import Copyright from "./Copyright";
 
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,6 +12,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Snackbar from '@mui/material/Snackbar';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -21,6 +23,8 @@ const defaultTheme = createTheme();
 export default function Login() {
   const navigate = useNavigate();
   const [rememberMe, setRememberMe] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -45,8 +49,16 @@ export default function Login() {
       })
       .then(response => response.json())
       .then(data => {
-        console.log('Success:', data);
+        console.log('User logged in successfully', data );
+        setSnackbarMessage("Successfully Logged In.");
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          (data['access_level']=='accesslevel2')? navigate('/employee-dashboard'):navigate('/client-dashboard')
+        }, 3000);
       })
+      // .then(data => {
+      //   console.log('Success:', data);
+      // })
       .catch((error) => {
         console.error('Error:', error);
       });
@@ -74,6 +86,10 @@ export default function Login() {
   const handleRememberMeChange = (event) => {
     setRememberMe(event.target.checked);
     console.log("Remember me checked:", event.target.checked);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -147,6 +163,11 @@ export default function Login() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>  
       </Container>
     </ThemeProvider>
   );
