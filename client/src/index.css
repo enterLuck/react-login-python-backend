@@ -1,13 +1,89 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* The main style sheet for device specific styling */
+
+/* Styles for mobile devices */
+@media only screen and (max-width: 600px) {
+
+  /* CSS rules specific to mobile devices */
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .menu {
+    display: none; /* Hide the menu on mobile */
+  }
+
+  .mobile-menu {
+    display: block; /* Show a mobile-specific menu */
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Styles for tablets */
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  /* CSS rules specific to tablets */
+
+  body {
+    font-size: 16px;
+  }
+
+  .container {
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .menu {
+    display: block; /* Show the menu on tablets */
+  }
+
+  .mobile-menu {
+    display: none; /* Hide the mobile-specific menu */
+  }
+}
+
+/* Styles for laptops and desktops */
+@media only screen and (min-width: 1025px) {
+  /* CSS rules specific to laptops and desktops */
+
+  body {
+    font-size: 18px;
+  }
+
+  .container {
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .menu {
+    display: block; /* Show the menu on laptops and desktops */
+  }
+
+  .mobile-menu {
+    display: none; /* Hide the mobile-specific menu */
+  }
+}
+
+/* Styles for larger desktops and beyond */
+@media only screen and (min-width: 1441px) {
+  /* CSS rules specific to larger desktops and beyond */
+
+  body {
+    font-size: 20px;
+  }
+
+  .container {
+    width: 1200px;
+    margin: 0 auto;
+  }
+
+  .menu {
+    display: block; /* Show the menu on larger desktops */
+  }
+
+  .mobile-menu {
+    display: none; /* Hide the mobile-specific menu */
+  }
 }
