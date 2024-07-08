@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import Copyright from "./Copyright";
 
@@ -21,22 +22,20 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const defaultTheme = createTheme();
 
 export default function Login() {
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = React.useState(false);
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const loginData = {
-      username: data.get('username'),
-      password: data.get('password'),
-      rememberMe: rememberMe,
-    };
     // const loginData = {
-    //   username: 'user1',
-    //   password: 'pass1'
+    //   email: data.get('email'),
+    //   password: data.get('password'),
     // };
 
     try {
@@ -45,43 +44,36 @@ export default function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData),
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('User logged in successfully', data );
-        setSnackbarMessage("Successfully Logged In.");
-        setOpenSnackbar(true);
-        setTimeout(() => {
-          (data['access_level']=='accesslevel2')? navigate('/employee-dashboard'):navigate('/client-dashboard')
-        }, 3000);
-      })
-      // .then(data => {
-      //   console.log('Success:', data);
-      // })
-      .catch((error) => {
-        console.error('Error:', error);
+        body: JSON.stringify({ email, password }),
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSnackbarMessage('Successfully Logged In.');
+        setSnackbarSeverity('success');
+        setTimeout(() => {
+          if (data.access_level === 'E') {
+            navigate('/employee-dashboard');
+          } else {
+            navigate('/client-dashboard');
+          }
+        }, 3000);
+      } else {
+        setSnackbarMessage(data.message || 'Login failed');
+        setSnackbarSeverity('error');
+      }
     } catch (error) {
-      console.error("Error:", error);
-      // Handle network errors
+      setSnackbarMessage('Network error. Please try again later.');
+      setSnackbarSeverity('error');
     }
-    
+    setSnackbarOpen(true);
   };
+
 
   const handleRedirect = (page) => {
     navigate(`/${page}`);
   };
-
-  // const handleForgotPassword = () => {
-  //   console.log("Redirect to forgot password page");
-  //   // Implement your logic here, e.g., navigate to a forgot password page
-  // };
-
-  // const handleSignUp = () => {
-  //   console.log("Redirect to sign up page");
-  //   // Implement your logic here, e.g., navigate to a sign-up page
-  // };
 
   const handleRememberMeChange = (event) => {
     setRememberMe(event.target.checked);
@@ -89,7 +81,7 @@ export default function Login() {
   };
 
   const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
+    setSnackbarOpen(false);
   };
 
   return (
@@ -113,15 +105,15 @@ export default function Login() {
           <Typography component="h1" variant="h5" sx={{ p: 2 }}>
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
               fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
               autoFocus
             />
             <TextField
@@ -144,7 +136,7 @@ export default function Login() {
               variant="outlined"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Login
             </Button>
             <Grid container>
               <ButtonGroup>
@@ -163,11 +155,11 @@ export default function Login() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
-        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
-          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>  
+        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       </Container>
     </ThemeProvider>
   );

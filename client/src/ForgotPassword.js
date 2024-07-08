@@ -1,18 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+
+import Alert from '@mui/material/Alert'; 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-
+import Snackbar from '@mui/material/Snackbar';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const handleSubmit = (event) => {
+  const [email, setEmail] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const handleChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission
+
+    try {
+      const response = await axios.post('http://localhost:5000/reset-password', { email });
+      if (response.status === 200) {
+        setSnackbarMessage('A temporary password has been sent to your email.');
+        setSnackbarSeverity('success');
+      }
+    } catch (error) {
+      setSnackbarMessage('Error resetting password. Please try again.');
+      setSnackbarSeverity('error');
+    }
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const handleRedirect = (page) => {
@@ -45,6 +72,8 @@ const ForgotPassword = () => {
                         fullWidth
                         id="formForgetEmail"
                         label="Email address"
+                        value={email}
+                        onChange={handleChange}
                         placeholder="Email"
                         required
                       />
@@ -63,6 +92,11 @@ const ForgotPassword = () => {
             </Grid>
           </Grid>
         </Container>
+        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Box>
     </React.Fragment>
   );

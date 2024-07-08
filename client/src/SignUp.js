@@ -72,7 +72,7 @@ export default function SignUp() {
 
   const handleRememberMeChange = (event) => {
     setRememberMe(event.target.checked);
-    console.log("Remember me checked:", event.target.checked);
+    console.log("Recieve Updates:", event.target.checked);
   };
 
   const handleSnackbarClose = () => {
