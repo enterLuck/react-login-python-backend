@@ -52,6 +52,7 @@ export default function Login() {
       if (response.ok) {
         setSnackbarMessage('Successfully Logged In.');
         setSnackbarSeverity('success');
+        setSnackbarOpen(true);
         setTimeout(() => {
           if (data.access_level === 'E') {
             navigate('/employee-dashboard');
@@ -62,12 +63,15 @@ export default function Login() {
       } else {
         setSnackbarMessage(data.message || 'Login failed');
         setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setTimeout(() => {setEmail('');setPassword('')}, 4000);
       }
     } catch (error) {
       setSnackbarMessage('Network error. Please try again later.');
       setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      setTimeout(() => {setEmail('');setPassword('')}, 4000);
     }
-    setSnackbarOpen(true);
   };
 
 
@@ -108,23 +112,25 @@ export default function Login() {
           <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
-              required
               fullWidth
               id="email"
               label="Email"
               name="email"
-              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} 
+              required
               autoFocus
             />
             <TextField
               margin="normal"
-              required
+              id="password"
               fullWidth
               name="password"
               label="Password"
               type="password"
-              id="password"
-              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" onChange={handleRememberMeChange} />}
@@ -155,7 +161,7 @@ export default function Login() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
-        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Snackbar open={snackbarOpen} autoHideDuration={5000} onClose={handleSnackbarClose}>
         <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
           {snackbarMessage}
         </Alert>
