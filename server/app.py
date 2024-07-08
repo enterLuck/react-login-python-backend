@@ -5,12 +5,12 @@ import string
 import random
 
 app = Flask(__name__)
-# CORS(app, origins=['http://localhost:3000'])
 CORS(app)
 
 # In-memory user credentials storage
 credentials = {
     "user1@gmail.com": {
+        "email": "user1@gmail.com",
         "fname": "John",
         "lname": "Doe",
         "password": "pass1",
@@ -18,6 +18,7 @@ credentials = {
         "access_level": "C"
     },
     "user2@gmail.com": {
+        "email": "user2@gmail.com",
         "fname": "Jane",
         "lname": "Doe",
         "password": "pass2",
@@ -29,7 +30,6 @@ credentials = {
 @app.route('/')
 def hello():
     return 'Hello, Flask!'
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -61,15 +61,15 @@ def signup():
         return jsonify({"status": "fail", "message": "User already exists"}), 409
 
     credentials[email] = {
+        "email": email,
         "fname": fname,
         "lname": lname,
         "password": password,
         "notify": 0,
-        "access_level": "C"
+        "access_level": "C"  # Default access level for new users
     }
 
     return jsonify({"status": "success", "message": "User registered successfully"}), 201
-
 
 def generate_temp_password(length=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
@@ -78,14 +78,11 @@ def generate_temp_password(length=8):
 def reset_password():
     data = request.json
     email = data.get('email')
-    
 
     user = credentials.get(email)
     if user:
         temp_password = generate_temp_password()
         user['password'] = temp_password
-        # Here you would send the temp_password to the user's email
-        # For this example, we are just returning it in the response
         # Send the email with the temporary password
         server = smtplib.SMTP('smtp.example.com', 587)
         server.starttls()
@@ -101,6 +98,6 @@ def reset_password():
         })
     else:
         return jsonify({"status": "fail", "message": "Email not found"}), 404
-    
+
 if __name__ == '__main__':
     app.run(debug=True)
